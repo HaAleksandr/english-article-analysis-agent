@@ -1,0 +1,107 @@
+{
+  "version": 1,
+  "title": "Small rule base for English article analysis",
+  "scope": {
+    "labels": ["definite", "indefinite", "zero"],
+    "zero_definition": "A licensed noun phrase with no overt a/an/the and no competing determiner; examples include many bare plural and mass noun uses, ordinary proper names, and some conventional institutional expressions.",
+    "out_of_scope": [
+      "Pronouns and noun phrases whose only determiner is a possessive, demonstrative, or quantifier",
+      "Incomplete or incorrectly specified target spans",
+      "Cases where syntax, intended lexical reading, or necessary context cannot be established"
+    ],
+    "note": "These rules support interpretation; they do not replace syntactic analysis or guarantee that a construction is grammatical in every dialect. Absence of a/an/the alone is not evidence sufficient to classify zero."
+  },
+  "rules": [
+    {
+      "id": "R00",
+      "title": "Scope and abstention",
+      "always": true,
+      "trigger_terms": [],
+      "guidance": "Classify the specified target noun phrase only. Do not infer zero merely from missing a/an/the. A pronoun, incomplete span, alternative determiner, or unresolved singular count noun may be outside scope; use article=null and status=ambiguous when the evidence is insufficient.",
+      "examples": [
+        {"text": "I spoke to her.", "target_phrase": "her", "article": null, "status": "ambiguous"},
+        {"text": "She bought book yesterday.", "target_phrase": "book", "article": null, "status": "ambiguous"}
+      ]
+    },
+    {
+      "id": "R01",
+      "title": "Overt article form",
+      "trigger_terms": [" a ", " an ", " the ", "a ", "an ", "the "],
+      "guidance": "If the verified target noun phrase begins with a, an, or the, classify its overt article form as indefinite for a/an and definite for the. Do not classify another noun phrase in the same sentence instead.",
+      "examples": [
+        {"text": "I saw a dog near the house.", "target_phrase": "a dog", "article": "indefinite"},
+        {"text": "I saw a dog near the house.", "target_phrase": "the house", "article": "definite"}
+      ]
+    },
+    {
+      "id": "R02",
+      "title": "Bare plural count nouns",
+      "trigger_terms": ["dogs", "cats", "birds", "students", "people", "children", "neighbors", "books", "tigers", "whales", "parents"],
+      "guidance": "A well-formed bare plural can have zero article in generic statements (Dogs are great) and in specific readings (I spoke to neighbors from my building). Determine whether the target is genuinely a bare plural; an embedded plural under the might not be the full target noun phrase.",
+      "examples": [
+        {"text": "Dogs are great.", "target_phrase": "Dogs", "article": "zero"},
+        {"text": "I spoke to neighbors from my building.", "target_phrase": "neighbors", "article": "zero"}
+      ]
+    },
+    {
+      "id": "R03",
+      "title": "Mass nouns",
+      "trigger_terms": ["water", "music", "information", "advice", "furniture", "rice", "sleep", "coffee", "research", "evidence"],
+      "guidance": "Many mass nouns occur without an article in general or other licensed bare-noun uses. A mass noun can also occur with the or a quantifier; inspect the full target phrase and do not decide from the noun's lexical identity alone.",
+      "examples": [
+        {"text": "Music helps me concentrate.", "target_phrase": "Music", "article": "zero"},
+        {"text": "She bought the furniture we discussed.", "target_phrase": "the furniture", "article": "definite"}
+      ]
+    },
+    {
+      "id": "R04",
+      "title": "Proper names and names with conventional articles",
+      "trigger_terms": ["london", "paris", "maya", "jordan", "mount everest", "the netherlands", "the hague", "united states"],
+      "guidance": "Many individual names are used with zero article (Paris, Maya, Mount Everest), while certain place names conventionally include the (the Netherlands, the Hague, the United States). If the target includes overt the, classify that form as definite; do not generalize from proper-noun status alone.",
+      "examples": [
+        {"text": "Maya visited Paris.", "target_phrase": "Paris", "article": "zero"},
+        {"text": "The Netherlands borders Germany.", "target_phrase": "The Netherlands", "article": "definite"}
+      ]
+    },
+    {
+      "id": "R05",
+      "title": "Institutional and conventional expressions",
+      "trigger_terms": ["school", "hospital", "bed", "work", "church", "prison", "college", "university", "go to", "at work", "in hospital"],
+      "guidance": "Some institutional and fixed expressions can use a bare noun when the institution's purpose/activity is meant (go to school, go to bed, at work). Article use can change with the intended meaning and dialect: compare admitted to the hospital with at hospital in some varieties. Use context, and abstain if the intended construction is unclear.",
+      "examples": [
+        {"text": "The children went to school.", "target_phrase": "school", "article": "zero"},
+        {"text": "She was admitted to the hospital.", "target_phrase": "the hospital", "article": "definite"}
+      ]
+    },
+    {
+      "id": "R06",
+      "title": "Context-dependent definiteness",
+      "trigger_terms": ["earlier", "previously", "mentioned", "same", "again", "already", "this morning", "yesterday", "proposal", "report", "woman", "one"],
+      "guidance": "Prior discourse can support a definite interpretation (for example, an entity introduced earlier). It does not override overt article form. If the target is bare, decide whether that noun phrase is licensed without an article; do not use context to invent an unexpressed article.",
+      "examples": [
+        {"text": "The proposal needs a budget.", "target_phrase": "The proposal", "context": "We discussed a proposal yesterday.", "article": "definite"},
+        {"text": "I spoke to neighbors from my building.", "target_phrase": "neighbors", "article": "zero"}
+      ]
+    },
+    {
+      "id": "R07",
+      "title": "Alternative determiners and pronouns",
+      "trigger_terms": ["my ", "your ", "his ", "her ", "our ", "their ", "this ", "that ", "these ", "those ", "some ", "any ", "each ", "every ", "many ", "few ", "several ", " he ", " she ", " it ", " they ", " him ", " them "],
+      "guidance": "Possessives, demonstratives, quantifiers, and pronouns are not overt articles. For this MVP, such targets are outside the intended three-way article-choice scope unless the target phrase itself clearly identifies a separate noun phrase. Do not automatically label these zero.",
+      "examples": [
+        {"text": "My brother repaired the car.", "target_phrase": "my brother", "article": null, "status": "ambiguous"},
+        {"text": "I found some information online.", "target_phrase": "some information", "article": null, "status": "ambiguous"}
+      ]
+    },
+    {
+      "id": "R08",
+      "title": "Singular count nouns and target-span validation",
+      "trigger_terms": ["book", "table", "dog", "house", "notebook", "report", "answer", "bank", "coin", "question"],
+      "guidance": "Ordinary singular count nouns normally require a determiner in standard English. A bare singular such as book in 'I bought book yesterday' should not be called zero; the sentence may be malformed or the target may be underspecified. Confirm that target_phrase is the full noun phrase, not just the noun inside a larger phrase such as the neighbors.",
+      "examples": [
+        {"text": "I bought book yesterday.", "target_phrase": "book", "article": null, "status": "ambiguous"},
+        {"text": "I spoke to the neighbors.", "target_phrase": "neighbors", "article": null, "status": "ambiguous"}
+      ]
+    }
+  ]
+}

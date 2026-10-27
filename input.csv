@@ -1,0 +1,9 @@
+id,text,target_phrase,context
+I01,I saw a dog near the house.,a dog,
+I02,I saw a dog near the house.,the house,
+I03,Dogs are great.,Dogs,
+I04,Music helps me concentrate.,Music,
+I05,The report contains new figures.,The report,We discussed a report yesterday; this is the one I mean.
+I06,I went to the bank yesterday.,the bank,
+I07,The children went to school after breakfast.,school,They attended classes there.
+I08,Maya visited Paris in April.,Paris,
